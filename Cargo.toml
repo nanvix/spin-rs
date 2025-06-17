@@ -15,10 +15,20 @@ rust-version = "1.60"
 [dependencies]
 lock_api_crate = { package = "lock_api", version = "0.4", optional = true }
 # Enable require-cas feature to provide a better error message if the end user forgets to use the cfg or feature.
-portable-atomic = { version = "1.3", optional = true, default-features = false, features = ["require-cas"] }
+portable-atomic = { version = "1.3", optional = true, default-features = false, features = [
+    "require-cas",
+] }
 
 [features]
-default = ["lock_api", "mutex", "spin_mutex", "rwlock", "once", "lazy", "barrier"]
+default = [
+    "lock_api",
+    "mutex",
+    "spin_mutex",
+    "rwlock",
+    "once",
+    "lazy",
+    "barrier",
+]
 
 # Enables `Mutex`. Must be used with either `spin_mutex` or `use_ticket_mutex`.
 mutex = []
