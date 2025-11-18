@@ -66,7 +66,6 @@
 //!   with some requirements for no-std build:
 //!   https://github.com/taiki-e/portable-atomic#optional-features
 
-
 #[cfg(any(test, feature = "std"))]
 extern crate core;
 
