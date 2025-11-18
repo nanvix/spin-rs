@@ -124,7 +124,7 @@ unsafe impl<T: ?Sized + Send, R> Send for Mutex<T, R> {}
 ///
 /// [`TicketMutexGuard`]: ./struct.TicketMutexGuard.html
 /// [`SpinMutexGuard`]: ./struct.SpinMutexGuard.html
-pub struct MutexGuard<'a, T: 'a + ?Sized> {
+pub struct MutexGuard<'a, T: ?Sized> {
     inner: InnerMutexGuard<'a, T>,
 }
 
@@ -181,7 +181,7 @@ impl<T: ?Sized, R: RelaxStrategy> Mutex<T, R> {
     /// }
     /// ```
     #[inline(always)]
-    pub fn lock(&self) -> MutexGuard<T> {
+    pub fn lock(&self) -> MutexGuard<'_, T> {
         MutexGuard {
             inner: self.inner.lock(),
         }
@@ -227,7 +227,7 @@ impl<T: ?Sized, R> Mutex<T, R> {
     /// assert!(maybe_guard2.is_none());
     /// ```
     #[inline(always)]
-    pub fn try_lock(&self) -> Option<MutexGuard<T>> {
+    pub fn try_lock(&self) -> Option<MutexGuard<'_, T>> {
         self.inner
             .try_lock()
             .map(|guard| MutexGuard { inner: guard })
@@ -253,7 +253,7 @@ impl<T: ?Sized, R> Mutex<T, R> {
 }
 
 impl<T: ?Sized + fmt::Debug, R> fmt::Debug for Mutex<T, R> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&self.inner, f)
     }
 }
@@ -290,13 +290,13 @@ impl<'a, T: ?Sized> MutexGuard<'a, T> {
 }
 
 impl<'a, T: ?Sized + fmt::Debug> fmt::Debug for MutexGuard<'a, T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&**self, f)
     }
 }
 
 impl<'a, T: ?Sized + fmt::Display> fmt::Display for MutexGuard<'a, T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&**self, f)
     }
 }

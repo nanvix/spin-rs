@@ -174,7 +174,7 @@ impl<T: ?Sized, R: RelaxStrategy> SpinMutex<T, R> {
     /// }
     /// ```
     #[inline(always)]
-    pub fn lock(&self) -> SpinMutexGuard<T> {
+    pub fn lock(&self) -> SpinMutexGuard<'_, T> {
         // Can fail to lock even if the spinlock is not locked. May be more efficient than `try_lock`
         // when called in a loop.
         loop {
@@ -228,7 +228,7 @@ impl<T: ?Sized, R> SpinMutex<T, R> {
     /// assert!(maybe_guard2.is_none());
     /// ```
     #[inline(always)]
-    pub fn try_lock(&self) -> Option<SpinMutexGuard<T>> {
+    pub fn try_lock(&self) -> Option<SpinMutexGuard<'_, T>> {
         // The reason for using a strong compare_exchange is explained here:
         // https://github.com/Amanieu/parking_lot/pull/207#issuecomment-575869107
         if self
@@ -250,7 +250,7 @@ impl<T: ?Sized, R> SpinMutex<T, R> {
     /// Unlike [`SpinMutex::try_lock`], this function is allowed to spuriously fail even when the mutex is unlocked,
     /// which can result in more efficient code on some platforms.
     #[inline(always)]
-    pub fn try_lock_weak(&self) -> Option<SpinMutexGuard<T>> {
+    pub fn try_lock_weak(&self) -> Option<SpinMutexGuard<'_, T>> {
         if self
             .lock
             .compare_exchange_weak(false, true, Ordering::Acquire, Ordering::Relaxed)
@@ -287,7 +287,7 @@ impl<T: ?Sized, R> SpinMutex<T, R> {
 }
 
 impl<T: ?Sized + fmt::Debug, R> fmt::Debug for SpinMutex<T, R> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.try_lock() {
             Some(guard) => write!(f, "Mutex {{ data: ")
                 .and_then(|()| (&*guard).fmt(f))
@@ -332,13 +332,13 @@ impl<'a, T: ?Sized> SpinMutexGuard<'a, T> {
 }
 
 impl<'a, T: ?Sized + fmt::Debug> fmt::Debug for SpinMutexGuard<'a, T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&**self, f)
     }
 }
 
 impl<'a, T: ?Sized + fmt::Display> fmt::Display for SpinMutexGuard<'a, T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&**self, f)
     }
 }

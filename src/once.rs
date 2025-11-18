@@ -38,7 +38,7 @@ impl<T, R> Default for Once<T, R> {
 }
 
 impl<T: fmt::Debug, R> fmt::Debug for Once<T, R> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut d = f.debug_tuple("Once");
         let d = if let Some(x) = self.get() {
             d.field(&x)
